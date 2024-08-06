@@ -1,0 +1,17 @@
+/* global.css */
+
+/* Import SimpleBar styles */
+@import 'simplebar-react/dist/simplebar.min.css';
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px; /* Set the scrollbar width for WebKit browsers */
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 0, 0, 0.068); /* Darker red color for scrollbar thumb */
+  border-radius: 8px; /* Set the scrollbar thumb border radius */
+}
+::-webkit-scrollbar-track {
+  background-color: #180f0f; /* Set the scrollbar track color with opacity */
+  border-radius: 8px; /* Set the scrollbar track border radius */
+}
