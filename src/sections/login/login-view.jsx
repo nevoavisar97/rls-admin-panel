@@ -1,5 +1,6 @@
 import { useState } from 'react';
-
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
@@ -12,18 +13,16 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { alpha, useTheme } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
 
-
-import { useDispatch } from 'react-redux';
 import { login } from 'src/redux/authSlice';
-import { useRouter } from 'src/routes/hooks';
+import { setUserInfo } from 'src/redux/userSlice'; // Import the setUserInfo action
 import { bgGradient } from 'src/theme/css';
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
-import { loginUser } from 'src/api/user';
+import { loginUser, GetUserInfo } from 'src/api/user';
 
 export default function LoginView() {
   const theme = useTheme();
-  const router = useRouter();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [unauthorized, setUnauthorized] = useState(null);
@@ -55,7 +54,11 @@ export default function LoginView() {
       else {
         localStorage.setItem('logged', request);
         dispatch(login(request));
-        router.push('/');
+        // Fetch user info and store in user slice
+        const userInfo = await GetUserInfo(request);
+        dispatch(setUserInfo(userInfo));
+        if(request == 'ad001') navigate('/admin');
+        else navigate('/');
       }
     }
     else {
@@ -64,17 +67,14 @@ export default function LoginView() {
   };
 
   const renderForm = (
-
     <Stack spacing={3}>
       <Typography variant="h4">Sign in to RLS | Panel</Typography>
-
       <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
         Don’t have an account?
-        <Link variant="subtitle2" sx={{ ml: 0.5, cursor: 'pointer' }} onClick={() => router.push('/register')}>
+        <Link variant="subtitle2" sx={{ ml: 0.5, cursor: 'pointer' }} onClick={() => navigate('/register')}>
           Get started
         </Link>
       </Typography>
-
       <Divider sx={{ my: 3 }}>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           OR
@@ -102,11 +102,7 @@ export default function LoginView() {
           ),
         }}
       />
-      <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={1}>
-        <Link variant="subtitle2" sx={{ cursor: 'pointer' }} onClick={() => router.push('/register')}>
-          Forgot password?
-        </Link>
-      </Stack>
+
       <LoadingButton
         fullWidth
         size="large"
@@ -118,13 +114,10 @@ export default function LoginView() {
         Login
       </LoadingButton>
     </Stack>
-
   );
 
   const renderUnauthorizedMessage = (
     <Card sx={{ p: 5, width: 1, maxWidth: 420 }}>
-
-
       <Typography variant="h4" sx={{ mb: 3 }}>Access Denied</Typography>
       <Typography variant="body1" sx={{ color: 'error.main', textAlign: 'center' }}>
         {unauthorized === 'Pending' ? 'Your account is pending approval.' : 'Access to your account is denied.'}
@@ -135,7 +128,6 @@ export default function LoginView() {
         </Typography>
       </Divider>
       <Typography variant="h4">You can contact our game admin - admin@rls.com for further information</Typography>
-
     </Card>
   );
 
@@ -164,7 +156,6 @@ export default function LoginView() {
             maxWidth: 420,
           }}
         >
-
           {unauthorized ? renderUnauthorizedMessage : renderForm}
         </Card>
       </Stack>

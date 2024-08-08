@@ -7,24 +7,29 @@ import { selectAuth } from 'src/redux/authSlice';
 import AppCurrentVisits from '../app-current-visits';
 import AppWebsiteVisits from '../app-website-visits';
 import AppWidgetSummary from '../app-widget-summary';
-import { GetUserQuestions, GetQuestionAnsInsights } from 'src/api/questions';
-import { GetUserInfo } from 'src/api/user'; 
+import { GetUserQuestions, GetQuestionAnsInsights, GetTopSubjects } from 'src/api/questions';
+import { getInsigths, GetUserInfo } from 'src/api/user';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
 
 export default function AppView() {
   const auth = useSelector(selectAuth);
   const userId = (auth.user);
   const [questions, setQuestions] = useState([]);
+  const [subjects, setSubjects] = useState(null);
   const [questionsAddedThisMonth, setQuestionsAddedThisMonth] = useState(0);
   const [userInfo, setUserInfo] = useState(null);
   const [ansInsights, setAnsInsights] = useState(null);
+  const [aiInsights, setAiInsights] = useState(null);
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const questions = await GetUserQuestions(userId); 
+        const questions = await GetUserQuestions(userId);
         const ansInsights = await GetQuestionAnsInsights(userId);
+        const aiInsight = await getInsigths();
         setAnsInsights(ansInsights);
         setQuestions(questions);
+        setAiInsights(aiInsight);
       } catch (error) {
         console.error('Error fetching lecture questions:', error);
       }
@@ -32,6 +37,21 @@ export default function AppView() {
 
     fetchQuestions();
   }, [userId]);
+
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const res = await GetTopSubjects();
+        setSubjects(res);
+      } catch (error) {
+        console.error('Error fetching subjects', error);
+      }
+    };
+
+    fetchSubjects();
+    console.log(subjects);
+
+  }, []);
 
   useEffect(() => {
     const getQuestionsAddedThisMonth = () => {
@@ -116,25 +136,25 @@ export default function AppView() {
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
           />
         </Grid>
+        {aiInsights &&
+          <Grid xs={12} sm={6} md={3}>
+            <AppWidgetSummary
+              title={aiInsights[0]}
+              color="warning"
+              icon={<LightbulbIcon style={{ color: 'yellow' }} />}
+            />
+          </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Item Orders"
-            total={1723315}
-            color="warning"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
-          />
-        </Grid>
-
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Bug Reports"
-            total={234}
-            color="error"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
-          />
-        </Grid>
-
+        }
+        {aiInsights &&
+          <Grid xs={12} sm={6} md={3}>
+            <AppWidgetSummary
+              title={aiInsights[1]}
+              color="warning"
+              icon={<LightbulbIcon style={{ color: 'yellow' }} />}
+            />
+          </Grid>
+        }
         <Grid xs={12} md={6} lg={8}>
           <AppWebsiteVisits
             title="Question Answers Insights"
@@ -142,20 +162,21 @@ export default function AppView() {
             chart={chartData}
           />
         </Grid>
+        {subjects &&
+          <Grid xs={12} md={6} lg={4}>
+            <AppCurrentVisits
+              title="Top Subjects by Question Volume"
+              chart={{
+                series: [
+                  { label: subjects[0]["subject"], value: subjects[0]["amount"] },
+                  { label: subjects[1]["subject"], value: subjects[1]["amount"] },
+                  { label: subjects[2]["subject"], value: subjects[2]["amount"] },
+                  { label: subjects[3]["subject"], value: subjects[3]["amount"] },
+                ],
+              }}
+            />
+          </Grid>}
 
-        <Grid xs={12} md={6} lg={4}>
-          <AppCurrentVisits
-            title="Current Visits"
-            chart={{
-              series: [
-                { label: 'America', value: 4344 },
-                { label: 'Asia', value: 5435 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
-              ],
-            }}
-          />
-        </Grid>
       </Grid>
     </Container>
   );

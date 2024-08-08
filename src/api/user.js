@@ -73,6 +73,75 @@ export const loginUser = async (loginData) => {
   }
 };
 
+export const getInsigths = async () => {
+  try {
+    const apiKey = "AIzaSyCWOavwRLzQhrO68xAOb-482fSreL02A5E";
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": `I need 2 short tips for a lecturer related to creating academy questions. Please provide the tips in the following structure: (as a JSON array) ["text", "text"]. The subject of the tips should be generalized and not specific, but related to the course of academy questions.`
+              }
+            ]
+          }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to get tips");
+    }
+
+    const responseData = await response.json();
+    const tips = responseData.candidates[0].content.parts[0].text.replace(/```json\s*/, '').replace(/```$/, '');
+
+    try {
+      return JSON.parse(tips);
+    } catch (error) {
+      alert("Error: Failed to parse the response. Please try again.");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return null;
+  }
+};
+
+// Example usage of the getTips function
+getInsigths().then(tips => {
+  if (tips) {
+    console.log("Tip 1:", tips[0]);
+    console.log("Tip 2:", tips[1]);
+  }
+});
+
+//update user status
+export const updateStatus = async (email,status) => {
+  try {
+    // Make API request to log in user
+    const apiUrl = `${userUrl}/UpdateUserStatus/${email}`;
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8",
+      },
+      body: JSON.stringify(status), // Pass user password as JSON
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update status for user");
+    }
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    alert("Error:", error);
+  }
+};
+
+
 
 
 //register user
@@ -95,4 +164,5 @@ export const registerUser = async (userData) => {
     alert("Error:", error);
   }
 };
+
 

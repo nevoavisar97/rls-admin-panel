@@ -60,6 +60,28 @@ export const GetUserQuestions = async (user_id) => {
   }
 };
 
+export const GetTopSubjects = async () => {
+  try {
+    const apiUrl = `${questionUrl}/GetTopSubjects`;
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed get top subjects of questions");
+    }
+    const responseData = await response.json();
+    console.log(responseData);
+
+    return responseData;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+
 export const GetQuestionInsights = async (q_id) => {
   try {
     const apiUrl = `${questionUrl}/insights/${q_id}`;

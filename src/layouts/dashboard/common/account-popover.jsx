@@ -1,5 +1,6 @@
 import { useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import Popover from '@mui/material/Popover';
@@ -9,29 +10,27 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 
-import { account } from 'src/_mock/account';
-
-// ----------------------------------------------------------------------
+import { selectUser } from 'src/redux/userSlice'; // Import the selector for user info
+import { logout } from 'src/redux/authSlice'; // Import the logout action
 
 const MENU_OPTIONS = [
   {
     label: 'Home',
     icon: 'eva:home-fill',
+    path: '/',
   },
   {
-    label: 'Profile',
+    label: 'Management',
     icon: 'eva:person-fill',
-  },
-  {
-    label: 'Settings',
-    icon: 'eva:settings-2-fill',
+    path: '/user',
   },
 ];
 
-// ----------------------------------------------------------------------
-
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser); // Get user information from Redux
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -39,6 +38,17 @@ export default function AccountPopover() {
 
   const handleClose = () => {
     setOpen(null);
+  };
+
+  const handleMenuClick = (path) => {
+    handleClose();
+    navigate(path);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('logged'); // Remove the logged item from localStorage
+    dispatch(logout()); // Dispatch the logout action to update the Redux state
+    navigate('/'); // Navigate to the login page
   };
 
   return (
@@ -56,15 +66,15 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={account.photoURL}
-          alt={account.displayName}
+          src={user?.photoURL || ''}
+          alt={(user?.displayName) || ''}
           sx={{
             width: 36,
             height: 36,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {account.displayName.charAt(0).toUpperCase()}
+          {(user?.displayName)?.charAt(0).toUpperCase() || ''}
         </Avatar>
       </IconButton>
 
@@ -85,17 +95,17 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {(user?.displayName)}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {user?.email}
           </Typography>
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         {MENU_OPTIONS.map((option) => (
-          <MenuItem key={option.label} onClick={handleClose}>
+          <MenuItem key={option.label} onClick={() => handleMenuClick(option.path)}>
             {option.label}
           </MenuItem>
         ))}
@@ -105,7 +115,7 @@ export default function AccountPopover() {
         <MenuItem
           disableRipple
           disableTouchRipple
-          onClick={handleClose}
+          onClick={handleLogout} // Call handleLogout on click
           sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
         >
           Logout

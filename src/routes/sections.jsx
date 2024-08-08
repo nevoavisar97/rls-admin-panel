@@ -13,6 +13,7 @@ export const UserPage = lazy(() => import('src/pages/user'));
 export const AdminPage = lazy(() => import('src/sections/overview/user/view/user-view'));
 export const LoginPage = lazy(() => import('src/pages/login'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
+export const DocumentationPage = lazy(() => import('src/pages/documentation-view')); // Import the documentation page
 
 export default function Router() {
   const { isAuthenticated } = useSelector(selectAuth);
@@ -53,6 +54,10 @@ export default function Router() {
         {
           path: 'admin',
           element: <AdminPage />,
+        },
+        {
+          path: 'documentation', // Add the documentation route
+          element: <DocumentationPage />,
         },
       ],
     },

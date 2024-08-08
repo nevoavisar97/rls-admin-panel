@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
@@ -11,14 +13,11 @@ import Box from '@mui/material/Box';
 
 import { usePathname } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-
 import { useResponsive } from 'src/hooks/use-responsive';
-
-import { account } from 'src/_mock/account';
+import { selectUser } from 'src/redux/userSlice';
 
 import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';
-
 import { NAV } from './config-layout';
 import navConfig from './config-navigation';
 
@@ -26,8 +25,8 @@ import navConfig from './config-navigation';
 
 export default function Nav({ openNav, onCloseNav }) {
   const pathname = usePathname();
-
   const upLg = useResponsive('up', 'lg');
+  const user = useSelector(selectUser); // Get user information from Redux
 
   useEffect(() => {
     if (openNav) {
@@ -49,13 +48,13 @@ export default function Nav({ openNav, onCloseNav }) {
         bgcolor: (theme) => alpha(theme.palette.grey[500], 0.12),
       }}
     >
-      <Avatar src={account.photoURL} alt="photoURL" />
+      <Avatar src={user?.photoURL || ''} alt="photoURL" />
 
       <Box sx={{ ml: 2 }}>
-        <Typography variant="subtitle2">{account.displayName}</Typography>
+        <Typography variant="subtitle2">{user?.displayName || ''}</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {account.role}
+          {user?.role || ''}
         </Typography>
       </Box>
     </Box>
@@ -68,7 +67,6 @@ export default function Nav({ openNav, onCloseNav }) {
       ))}
     </Stack>
   );
-
 
   const renderContent = (
     <Scrollbar
@@ -88,8 +86,6 @@ export default function Nav({ openNav, onCloseNav }) {
       {renderMenu}
 
       <Box sx={{ flexGrow: 1 }} />
-
-
     </Scrollbar>
   );
 
@@ -165,7 +161,7 @@ function NavItem({ item }) {
         {item.icon}
       </Box>
 
-      <Box component="span">{item.title} </Box>
+      <Box component="span">{item.title}</Box>
     </ListItemButton>
   );
 }
