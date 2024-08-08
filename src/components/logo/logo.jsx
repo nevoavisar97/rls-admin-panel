@@ -24,7 +24,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
 
 
   const logo = (
-    <SvgColor src={`/public/assets/icons/glass/${'rls-logo1.png'}.svg`} sx={{ width: 200, cursor: 'pointer', ...sx }} />
+    <img alt="RLS" src="/assets/icons/glass/rls-logo1.png" />
   );
 
   if (disabledLink) {
