@@ -6,6 +6,7 @@ import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 
 import { RouterLink } from 'src/routes/components';
+import SvgColor from '../svg-color';
 
 // ----------------------------------------------------------------------
 
@@ -23,11 +24,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
 
 
   const logo = (
-    <Box
-      component="img"
-      src="\public\assets\icons\glass\rls-logo1.png" 
-      sx={{ width: 200, cursor: 'pointer', ...sx }}
-    />
+    <SvgColor src={`/public/assets/icons/glass/${'rls-logo1.png'}.svg`} sx={{ width: 200, cursor: 'pointer', ...sx }} />
   );
 
   if (disabledLink) {
