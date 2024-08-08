@@ -24,7 +24,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
 
 
   const logo = (
-    <img alt="RLS" src="/assets/icons/glass/rls-logo1.png" />
+    <img style={{width:'200px'}} alt="RLS" src="/assets/icons/glass/rls-logo1.png" />
   );
 
   if (disabledLink) {
