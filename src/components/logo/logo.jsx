@@ -25,7 +25,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
   const logo = (
     <Box
       component="img"
-      src="\public\assets\icons\rls-logo1.png" 
+      src="\public\assets\icons\glass\rls-logo1.png" 
       sx={{ width: 200, cursor: 'pointer', ...sx }}
     />
   );
